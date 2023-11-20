@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "iohwabs_led.h": "c",
+        "kernel.h": "c"
+    }
+}
