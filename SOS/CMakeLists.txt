@@ -5,3 +5,4 @@ project(SOS)
 
 target_sources(app PRIVATE src/main.c)
 target_sources(app PRIVATE src/IoHwAbs_LED.c)
+target_sources(app PRIVATE src/IoHwAbs_Switch.c)

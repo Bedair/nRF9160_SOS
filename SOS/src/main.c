@@ -1,43 +1,27 @@
 #include <zephyr/kernel.h>
 
 #include "IoHwAbs_LED.h"
-
-static uint32_t counter = 0;
+#include "IoHwAbs_Switch.h"
 
 int main(void)
 {       
         IoHwAbs_LED_Init();
-
-        //IoHwAbs_LED_Set_State(LED_1, LED_ON);
+        IoHwAbs_Switch_Init();
 
         while (1)
         {
-                
-                IoHwAbs_LED_Toggle(LED_0);
-                IoHwAbs_LED_Toggle(LED_1); 
-                IoHwAbs_LED_Toggle(LED_2); 
-                IoHwAbs_LED_Toggle(LED_3); 
-                
-                k_msleep(200); 
-                /*    
-                if (counter % 2)
-                {
-                        IoHwAbs_LED_Set_State(LED_0, LED_ON);
-                        IoHwAbs_LED_Set_State(LED_1, LED_ON);
-                        IoHwAbs_LED_Set_State(LED_2, LED_ON);
-                        IoHwAbs_LED_Set_State(LED_3, LED_ON);
-                }  
-                else
-                {
-                        IoHwAbs_LED_Set_State(LED_0, LED_OFF);
-                        IoHwAbs_LED_Set_State(LED_1, LED_OFF);
-                        IoHwAbs_LED_Set_State(LED_2, LED_OFF);
-                        IoHwAbs_LED_Set_State(LED_3, LED_OFF);
-                }
-                counter++; 
-                */
-
-                    
+               if (IoHwAbs_Switch_Get_State(SWITCH_0) ||
+                   IoHwAbs_Switch_Get_State(SWITCH_1) ||
+                   IoHwAbs_Switch_Get_State(SWITCH_2) ||
+                   IoHwAbs_Switch_Get_State(SWITCH_3)
+               )
+               {
+                        IoHwAbs_LED_Toggle(LED_0);
+                        IoHwAbs_LED_Toggle(LED_1); 
+                        IoHwAbs_LED_Toggle(LED_2); 
+                        IoHwAbs_LED_Toggle(LED_3); 
+               }
+                k_msleep(200);           
         }
         return 0;
 }
