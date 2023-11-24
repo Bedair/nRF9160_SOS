@@ -1,6 +1,9 @@
 {
     "files.associations": {
         "iohwabs_led.h": "c",
-        "kernel.h": "c"
+        "kernel.h": "c",
+        "app_gnss.h": "c",
+        "iohwabs_switch.h": "c",
+        "app_sms.h": "c"
     }
 }
