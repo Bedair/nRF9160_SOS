@@ -1,5 +1,5 @@
 /**********************************************************************
-* File Name : App_SMS.h
+* File Name : App_SMS.c
 * 
 * Description : Source file for the component responsible for send SMS
 *
