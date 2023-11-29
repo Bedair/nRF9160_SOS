@@ -36,6 +36,13 @@
 #define LED_INITIAL_PERIODICITY         (500)
 
 
+#define MODEM_NOT_STARTED               (0xAA)
+#define MODEM_STARTED                   (0x55)
+
+#define SOS_NOT_REQUESTED               (0xAA)
+#define SOS_REQUESTED                   (0x55)
+
+
 typedef enum{
         TASK_STATE_SUSPEND = 0xAA,
         TASK_STATE_RESUME  = 0x55
@@ -51,7 +58,8 @@ typedef enum{
 /**********************************************************************
 *                          Local Variables                           *
 **********************************************************************/
-
+static uint8_t Modem_State = MODEM_NOT_STARTED;
+static uint8_t SOS_State   = SOS_NOT_REQUESTED;
 
 /**********************************************************************
 *                           Local Functions                           *
@@ -77,10 +85,26 @@ static void LED_Handler(void)
 
         while (1)
         {
-                IoHwAbs_LED_Toggle(LED_0);
-                IoHwAbs_LED_Toggle(LED_1); 
-                IoHwAbs_LED_Toggle(LED_2); 
-                IoHwAbs_LED_Toggle(LED_3);
+                /* Toogle LED During Modem Initialization and make it ON when modem is initialized */
+                if (MODEM_STARTED == Modem_State)
+                {
+                        IoHwAbs_LED_Set_State(LED_0, LED_ON);
+                }
+                else
+                {
+                        IoHwAbs_LED_Toggle(LED_0);
+                }
+
+                /* Toggle LED2 if SOS not requested and make it ON when SOS is requested */
+                if (SOS_REQUESTED == SOS_State)
+                {
+                        IoHwAbs_LED_Set_State(LED_2, LED_ON);
+                }
+                else
+                {
+                        IoHwAbs_LED_Toggle(LED_2); 
+                }
+
                 k_msleep(LED_INITIAL_PERIODICITY); 
         }
         
@@ -128,9 +152,13 @@ static void Modem_Handler(void)
 
         App_SMS_Init();
 
+        Modem_State = MODEM_STARTED;
+
         printk("Modem_Handler Task Suspended ... \n\r");
         /* Wait until the Button is Pressed */
         k_sleep(K_FOREVER);
+
+        SOS_State = SOS_REQUESTED;
         while (1)
         {       
                 if (App_GNSS_Data_Valid())
