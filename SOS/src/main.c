@@ -22,12 +22,14 @@
 #include "IoHwAbs_Switch.h"
 
 
+/* TODO : update the Phone Number */
+#define CONFIG_SMS_SEND_PHONE_NUMBER "+000000000000"
 
 #define TASK_STACK_SIZE                 (1024)
 #define TASK_PRIORITY                   (5)
 
 #define BUTTON_HANDLER_PERIODICITY      (50)
-#define MODEM_HANDLER_PERIODICITY       (6000)
+#define MODEM_HANDLER_PERIODICITY       (5000)
 
 #define BUTTON_DEBOUNCE_DELAY           (10)
 
@@ -57,6 +59,9 @@ typedef enum{
 
 static void LED_Handler(void);
 static void Button_Handler(void);
+static void Modem_Handler(void);
+
+
 static void Modem_Handler(void);
 
 K_THREAD_DEFINE(LED_Handler_id, TASK_STACK_SIZE, LED_Handler, NULL, NULL, NULL, TASK_PRIORITY, 0, 0);
@@ -109,13 +114,39 @@ static void Button_Handler(void)
 
 static void Modem_Handler(void)
 {       
+        int ret = 0;
+        GNSS_Position_Type position;
+        uint32_t attampt = 0;
+
+        char textBuff[100];
+
+        printk("START Modem ... \n\r");
+        App_Modem_Init();
+
+        printk("START GNSS ... \n\r");
+        App_GNSS_Init();
+
+        App_SMS_Init();
 
         printk("Modem_Handler Task Suspended ... \n\r");
         /* Wait until the Button is Pressed */
         k_sleep(K_FOREVER);
         while (1)
-        {
-                printk("Modem_Handler ... \n\r");
+        {       
+                if (App_GNSS_Data_Valid())
+                {
+
+                        App_GNSS_Get_Position_Data(&position);
+                        attampt++;
+                        sprintf(textBuff, "Attampt: %d, longitude: %.6f, latitude: %.6f\n\r ", attampt, position.longitude, position.latitude);
+
+                        ret = App_SMS_Send(CONFIG_SMS_SEND_PHONE_NUMBER, textBuff);
+                        if (ret) 
+                        {
+                                printk("Sending SMS failed with error: %d\n", ret);
+                        }
+                }
+                
                 k_msleep(MODEM_HANDLER_PERIODICITY); 
         }
         

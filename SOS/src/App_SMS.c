@@ -113,6 +113,9 @@ void App_SMS_Init(void)
 */
 int App_SMS_Send(char *number, char *text)
 {
+	printk("Number : %s \n\r", number);
+	printk("Message : %s \n\r", text);
+
     return sms_send_text(number, text);
 }
 
